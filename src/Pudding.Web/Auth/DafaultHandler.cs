@@ -1,10 +1,10 @@
-﻿using Pudding.Core.Tool;
-using Pudding.Web.Api;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Pudding.Core.Tool;
+using Pudding.Web.Api;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,22 +21,22 @@ namespace Pudding.Web.Auth
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DefaultRequirement requirement)
         {
-            var authorizationFilterContext = context.Resource as AuthorizationFilterContext;
-            var httpContext = authorizationFilterContext.HttpContext;
-            var handlers = httpContext.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>();
-            foreach (var scheme in await _schemes.GetRequestHandlerSchemesAsync())
+            AuthorizationFilterContext authorizationFilterContext = context.Resource as AuthorizationFilterContext;
+            Microsoft.AspNetCore.Http.HttpContext httpContext = authorizationFilterContext.HttpContext;
+            IAuthenticationHandlerProvider handlers = httpContext.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>();
+            foreach (AuthenticationScheme scheme in await _schemes.GetRequestHandlerSchemesAsync())
             {
-                var handler = await handlers.GetHandlerAsync(httpContext, scheme.Name) as IAuthenticationRequestHandler;
+                IAuthenticationRequestHandler handler = await handlers.GetHandlerAsync(httpContext, scheme.Name) as IAuthenticationRequestHandler;
                 if (handler != null && await handler.HandleRequestAsync())
                 {
                     context.Fail();
                     return;
                 }
             }
-            var defaultAuthenticate = await _schemes.GetDefaultAuthenticateSchemeAsync();
+            AuthenticationScheme defaultAuthenticate = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (defaultAuthenticate != null)
             {
-                var result = await httpContext.AuthenticateAsync(defaultAuthenticate.Name);
+                AuthenticateResult result = await httpContext.AuthenticateAsync(defaultAuthenticate.Name);
                 if (result?.Principal != null)
                 {
                     if (long.Parse(result.Principal.Claims.SingleOrDefault(s => s.Type == "exp").Value) < DateTime.Now.ToIntS())
@@ -53,7 +53,7 @@ namespace Pudding.Web.Auth
                         httpContext.User = result.Principal;
                         if (requirement.Validation != null)
                         {
-                            var validMsg = requirement.Validation(httpContext);
+                            AuthResult validMsg = requirement.Validation(httpContext);
                             if (!validMsg.IsValid)
                             {
                                 authorizationFilterContext.Result = new JsonResult(new MessageResult
