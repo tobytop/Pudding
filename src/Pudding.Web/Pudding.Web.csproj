@@ -4,6 +4,9 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Pudding.Web</PackageId>
     <Version>1.0.0</Version>
+    <Authors>tobytop</Authors>
+    <RepositoryUrl>https://github.com/tobytop/Pudding</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
