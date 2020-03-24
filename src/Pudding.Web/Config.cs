@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace Pudding.Web
+﻿namespace Pudding.Web
 {
     public class Config
     {
-        public const string DEFAULT_CLAIM_USERID = "userid";
+        public const  string DEFAULT_CLAIM_USERID = "userid";
     }
 }

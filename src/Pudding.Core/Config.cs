@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Pudding.Core
+﻿namespace Pudding.Core
 {
     public class Config
     {

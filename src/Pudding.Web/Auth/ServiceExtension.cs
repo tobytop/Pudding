@@ -39,9 +39,9 @@ namespace Pudding.Core
                 services.AddSingleton(requirement);
             }
             return services.AddAuthorization(options =>
-            {
-                options.AddPolicy(requirement.AuthName, policy => policy.Requirements.Add(requirement));
-            })
+                {
+                    options.AddPolicy(requirement.AuthName, policy => policy.Requirements.Add(requirement));
+                })
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = requirement.AuthScheme;

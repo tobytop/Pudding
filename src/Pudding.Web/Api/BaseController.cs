@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 
 namespace Pudding.Web.Api
@@ -13,7 +13,8 @@ namespace Pudding.Web.Api
         /// 格式化器
         /// </summary>
         public IMapper _mapper { protected get; set; }
-        public ConcurrentDictionary<string, string> ConStrings { private get; set; }
+
+        public IMediator _mediator { protected get; set; }
 
         protected long GetUserID(string key = Config.DEFAULT_CLAIM_USERID)
         {
