@@ -9,7 +9,7 @@ using System.Transactions;
 
 namespace Pudding.Core.Data
 {
-    public abstract class BaseRepository : IDisposable
+    public abstract partial class BaseRepository : IDisposable
     {
         /// <summary>
         /// 数据库类型

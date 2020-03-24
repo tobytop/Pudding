@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Luddy.Test.Controllers
+namespace Pudding.Test.Controllers
 {
     [ApiController]
     public class WeatherForecastController : BaseController
@@ -29,6 +29,7 @@ namespace Luddy.Test.Controllers
         [HttpGet]
         public string MyLog2()
         {
+            mydata = "";
             return _cache.Get("lala");
         }
 
