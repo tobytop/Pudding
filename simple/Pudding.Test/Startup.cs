@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Pudding.Core;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace Pudding.Test
@@ -27,9 +29,38 @@ namespace Pudding.Test
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddJsonAndVersion();
+            services.AddJsonAndVersion().AddSwaggerGen(c=> {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+                //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SystemManagement.Dto.xml"));
+            });
             ContainerBuilder builder = new ContainerBuilder();
-            builder.BuildWeb(Assembly.GetExecutingAssembly()).BuildSerilog().BuildCacheManager();
+            builder.BuildWeb(Assembly.GetExecutingAssembly()).BuildSerilog(Configuration).BuildCacheManager();
             builder.Populate(services);
             IContainer container = builder.Build();
 
@@ -48,6 +79,13 @@ namespace Pudding.Test
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseMvc();
         }

@@ -1,4 +1,5 @@
 ﻿using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pudding.Web.Api;
 using Serilog;
@@ -24,12 +25,17 @@ namespace Luddy.Test.Controllers
             //_mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet]
         public string MyLog2()
         {
             return _cache.Get("lala");
         }
 
+        /// <summary>
+        /// 测试函数
+        /// </summary>
+        /// <returns>整的</returns>
         [HttpGet]
         public string MyLog1()
         {
