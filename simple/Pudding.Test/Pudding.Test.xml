@@ -4,7 +4,7 @@
         <name>Pudding.Test</name>
     </assembly>
     <members>
-        <member name="M:Luddy.Test.Controllers.WeatherForecastController.MyLog1">
+        <member name="M:Pudding.Test.Controllers.WeatherForecastController.MyLog1">
             <summary>
             测试函数
             </summary>

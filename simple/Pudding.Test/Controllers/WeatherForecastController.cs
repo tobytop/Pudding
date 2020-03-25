@@ -25,7 +25,6 @@ namespace Pudding.Test.Controllers
             //_mediator = mediator;
         }
 
-        [Authorize]
         [HttpGet]
         public string MyLog2()
         {
