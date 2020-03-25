@@ -14,52 +14,50 @@ namespace Pudding.Core
         /// <param name="ismultiply"></param>
         /// <returns></returns>
         public static ContainerBuilder BuildCacheManager(this ContainerBuilder builder, RedisConfig config, bool ismultiply = false)
-        {
-            return builder.BuildCacheManager(() => ConfigurationBuilder.BuildConfiguration(settings =>
-            {
-                if (ismultiply)
+            =>builder.BuildCacheManager(() => ConfigurationBuilder.BuildConfiguration(settings =>
                 {
-                    settings.WithDictionaryHandle(Config.MAINCACHE).And
-                        .WithRedisConfiguration(Config.MAINREDIS, configuration =>
-                        {
-                            configuration.WithAllowAdmin()
-                                .EnableKeyspaceEvents()
-                                .WithDatabase(config.Database)
-                                .WithEndpoint(config.Endpoints, config.Prot);
-                            if (!string.IsNullOrEmpty(config.Password))
+                    if (ismultiply)
+                    {
+                        settings.WithDictionaryHandle(Config.MAINCACHE).And
+                            .WithRedisConfiguration(Config.MAINREDIS, configuration =>
                             {
-                                configuration.WithPassword(config.Password);
-                            }
-                        })
-                        .WithJsonSerializer()
-                        .WithMaxRetries(100)
-                        .WithRetryTimeout(50)
-                        .WithRedisBackplane(Config.MAINREDIS)
-                        .WithRedisCacheHandle(Config.MAINREDIS);
-                }
-                else
-                {
-                    settings
-                        .WithRedisConfiguration(Config.MAINREDIS, configuration =>
-                        {
-                            configuration.WithAllowAdmin()
-                                .EnableKeyspaceEvents()
-                                .WithDatabase(config.Database)
-                                .WithEndpoint(config.Endpoints, config.Prot);
-                            if (!string.IsNullOrEmpty(config.Password))
+                                configuration.WithAllowAdmin()
+                                    .EnableKeyspaceEvents()
+                                    .WithDatabase(config.Database)
+                                    .WithEndpoint(config.Endpoints, config.Prot);
+                                if (!string.IsNullOrEmpty(config.Password))
+                                {
+                                    configuration.WithPassword(config.Password);
+                                }
+                            })
+                            .WithJsonSerializer()
+                            .WithMaxRetries(100)
+                            .WithRetryTimeout(50)
+                            .WithRedisBackplane(Config.MAINREDIS)
+                            .WithRedisCacheHandle(Config.MAINREDIS);
+                    }
+                    else
+                    {
+                        settings
+                            .WithRedisConfiguration(Config.MAINREDIS, configuration =>
                             {
-                                configuration.WithPassword(config.Password);
-                            }
-                        })
-                        .WithJsonSerializer()
-                        .WithMaxRetries(100)
-                        .WithRetryTimeout(50)
-                        .WithRedisBackplane(Config.MAINREDIS)
-                        .WithRedisCacheHandle(Config.MAINREDIS, true);
-                }
+                                configuration.WithAllowAdmin()
+                                    .EnableKeyspaceEvents()
+                                    .WithDatabase(config.Database)
+                                    .WithEndpoint(config.Endpoints, config.Prot);
+                                if (!string.IsNullOrEmpty(config.Password))
+                                {
+                                    configuration.WithPassword(config.Password);
+                                }
+                            })
+                            .WithJsonSerializer()
+                            .WithMaxRetries(100)
+                            .WithRetryTimeout(50)
+                            .WithRedisBackplane(Config.MAINREDIS)
+                            .WithRedisCacheHandle(Config.MAINREDIS, true);
+                    }
 
-            }));
-        }
+                }));
 
         /// <summary>
         /// 使用本机缓存
@@ -67,10 +65,9 @@ namespace Pudding.Core
         /// <param name="builder"></param>
         /// <returns></returns>
         public static ContainerBuilder BuildCacheManager(this ContainerBuilder builder)
-        {
-            return builder.BuildCacheManager(() =>
-                ConfigurationBuilder.BuildConfiguration(settings => settings.WithDictionaryHandle(true)));
-        }
+            =>builder.BuildCacheManager(() =>
+                    ConfigurationBuilder.BuildConfiguration(settings => settings.WithDictionaryHandle(true)));
+
 
         public static ContainerBuilder BuildCacheManager(this ContainerBuilder builder, Func<ICacheManagerConfiguration> config)
         {
