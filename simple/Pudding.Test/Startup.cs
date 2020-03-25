@@ -61,7 +61,7 @@ namespace Pudding.Test
             });
             ContainerBuilder builder = new ContainerBuilder()
                 .BuildWeb(Assembly.GetExecutingAssembly())
-                .BuildSerilog()
+                .BuildSerilog(Configuration)
                 .BuildCacheManager();
             builder.Populate(services);
             IContainer container = builder.Build();

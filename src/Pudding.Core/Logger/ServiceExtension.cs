@@ -70,6 +70,7 @@ namespace Pudding.Core
                     {
                         MinimumLogEventLevel = LogEventLevel.Information,
                         AutoRegisterTemplate = true,
+                        FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
                         IndexFormat = configuration["Serilog:ProjectName"] + "-{0:yyyy.MM.dd}"
                     }).CreateLogger()
             );
