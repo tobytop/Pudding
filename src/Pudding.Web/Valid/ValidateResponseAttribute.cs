@@ -29,7 +29,11 @@ namespace Pudding.Web.Valid
                 ValidationResult result = valid?.Validate(arg.Value);
                 if (result != null && !result.IsValid)
                 {
-                    MessageResult messageResult = new MessageResult { Status = false, Msg = string.Join(",", result.Errors.Select(o => o.ErrorMessage)) };
+                    MessageResult messageResult = new MessageResult<IList<ValidationFailure>> {
+                        Status = false,
+                        Msg = "发生错误",
+                        Data= result.Errors
+                    };
                     actionContext.Result = new JsonResult(messageResult);
                     break;
                 }
