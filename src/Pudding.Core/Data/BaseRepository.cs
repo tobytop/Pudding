@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Pudding.Core.Data
@@ -37,13 +38,40 @@ namespace Pudding.Core.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="t"></param>
         /// <returns></returns>
-        protected long Insert<T>(T t)
+        protected async Task<long> InsertAsync<T>(T entity)
         {
-            PropertyInfo[] ps = t.GetType().GetProperties();
+            return (await Conn.QueryAsync<long>(BuildInsertSql(entity), entity)).First();
+        }
+
+        protected long Insert<T>(T entity)
+        {
+            return Conn.Query<long>(BuildInsertSql(entity), entity).First();
+        }
+
+        /// <summary>
+        /// 更新通用方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        protected async Task<int> UpdateAsync<T>(T entity)
+        {
+            return await Conn.ExecuteAsync(BuildUpdateSql(entity), entity);
+        }
+
+        protected int Update<T>(T entity)
+        {
+            return Conn.Execute(BuildUpdateSql(entity), entity);
+        }
+
+
+        private string BuildInsertSql<T>(T entity)
+        {
+            PropertyInfo[] ps = entity.GetType().GetProperties();
             List<string> @colms = new List<string>();
             List<string> @params = new List<string>();
 
-            string tableName = GetTableName(t);
+            string tableName = GetTableName(entity);
             bool isIdentity = false;
             foreach (PropertyInfo p in ps)
             {
@@ -61,7 +89,7 @@ namespace Pudding.Core.Data
                 switch (Type.GetTypeCode(p.PropertyType))
                 {
                     case TypeCode.DateTime:
-                        if (Convert.ToDateTime(p.GetValue(t, null)) > DateTime.MinValue)
+                        if (Convert.ToDateTime(p.GetValue(entity, null)) > DateTime.MinValue)
                         {
                             @colms.Add(string.Format("{0}", p.Name));
                             @params.Add(string.Format("@{0}", p.Name));
@@ -75,14 +103,14 @@ namespace Pudding.Core.Data
                     case TypeCode.UInt16:
                     case TypeCode.UInt32:
                     case TypeCode.UInt64:
-                        if (!p.GetValue(t, null).ToString().Equals("0"))
+                        if (!p.GetValue(entity, null).ToString().Equals("0"))
                         {
                             @colms.Add(string.Format("{0}", p.Name));
                             @params.Add(string.Format("@{0}", p.Name));
                         }
                         break;
                     default:
-                        if ((property == null && p.GetValue(t, null) != null) || (property != null && !property.Identity))
+                        if ((property == null && p.GetValue(entity, null) != null) || (property != null && !property.Identity))
                         {
                             @colms.Add(string.Format("{0}", p.Name));
                             @params.Add(string.Format("@{0}", p.Name));
@@ -104,16 +132,10 @@ namespace Pudding.Core.Data
                 }
             }
 
-            return Conn.Query<long>(sql, t).First();
+            return sql;
         }
 
-        /// <summary>
-        /// 更新通用方法
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        protected int Update<T>(T entity)
+        private string BuildUpdateSql<T>(T entity)
         {
             PropertyInfo[] ps = entity.GetType().GetProperties();
             List<string> @params = new List<string>();
@@ -164,17 +186,15 @@ namespace Pudding.Core.Data
                         break;
                 }
             }
-            string sql = string.Format("update {0} set {1} where {2}", tableName, string.Join(", ", @params), where);
-            return Conn.Execute(sql, entity);
+            return string.Format("update {0} set {1} where {2}", tableName, string.Join(", ", @params), where);
         }
-
         /// <summary>
         /// 获取表名
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private static string GetTableName<T>(T entity)
+        private string GetTableName<T>(T entity)
         {
             string tableName = string.Empty;
             object[] objAttrs = entity.GetType().GetCustomAttributes(typeof(TableAttribute), true);
