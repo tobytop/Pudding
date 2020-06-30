@@ -39,6 +39,10 @@ namespace Pudding.Core
                 option.ReportApiVersions = true;
                 option.AssumeDefaultVersionWhenUnspecified = true;
                 option.DefaultApiVersion = new ApiVersion(1, 0);
+            }).AddVersionedApiExplorer(option =>
+            {
+                option.GroupNameFormat = "'v'VVV";
+                option.AssumeDefaultVersionWhenUnspecified = true;
             });
             return services;
         }

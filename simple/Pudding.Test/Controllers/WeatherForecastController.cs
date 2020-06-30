@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Pudding.Test.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
     public class WeatherForecastController : BaseController
     {
@@ -37,6 +38,7 @@ namespace Pudding.Test.Controllers
         /// </summary>
         /// <returns>整的</returns>
         [HttpGet]
+        [ApiVersion("2.0")]
         public string MyLog1()
         {
             Random rng = new Random();

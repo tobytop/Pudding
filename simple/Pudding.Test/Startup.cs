@@ -3,6 +3,8 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -30,7 +32,21 @@ namespace Pudding.Test
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddJsonAndVersion().AddSwaggerGen(c=> {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
+                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerDoc(description.GroupName,
+                         new OpenApiInfo()
+                         {
+                             Title = $"体检微服务接口 v{description.ApiVersion}",
+                             Version = description.ApiVersion.ToString(),
+                             Description = "切换版本请点右上角版本切换",
+                         }
+                    );
+                }
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -83,10 +99,16 @@ namespace Pudding.Test
                 .AllowAnyHeader()
                 .AllowCredentials());
             app.UseSwagger();
-
+            
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
+                //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
+                var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                }
+                //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
                 c.RoutePrefix = string.Empty;
             });
 
