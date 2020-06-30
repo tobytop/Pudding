@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using Pudding.Web.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Pudding.Web.Api;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Pudding.Web.Valid
 {
@@ -29,10 +28,12 @@ namespace Pudding.Web.Valid
                 ValidationResult result = valid?.Validate(arg.Value);
                 if (result != null && !result.IsValid)
                 {
-                    MessageResult messageResult = new MessageResult<IList<ValidationFailure>> {
+                    MessageResult messageResult = new MessageResult<IList<ValidationFailure>>
+                    {
+                        Code = 500,
                         Status = false,
                         Msg = "发生错误",
-                        Data= result.Errors
+                        Data = result.Errors
                     };
                     actionContext.Result = new JsonResult(messageResult);
                     break;
