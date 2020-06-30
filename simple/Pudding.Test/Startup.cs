@@ -59,8 +59,9 @@ namespace Pudding.Test
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
                 //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SystemManagement.Dto.xml"));
             });
+            
             ContainerBuilder builder = new ContainerBuilder()
-                .BuildWeb(Assembly.GetExecutingAssembly())
+                .BuildWeb()
                 .BuildSerilog()
                 .BuildCacheManager();
             builder.Populate(services);

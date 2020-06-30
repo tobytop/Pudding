@@ -17,10 +17,10 @@ namespace Pudding.Core
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="configuration">配置</param>
-        /// <param name="assemblyCurrent">当前程序集</param>
         /// <returns></returns>
-        public static ContainerBuilder BuildWeb(this ContainerBuilder builder, Assembly assemblyCurrent)
+        public static ContainerBuilder BuildWeb(this ContainerBuilder builder)
         {
+            Assembly assemblyCurrent = Assembly.GetCallingAssembly();
             builder.RegisterAssemblyTypes(assemblyCurrent).Where(p => p.Name.EndsWith("Validator"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<ValidatorFactory>().As<IValidatorFactory>().SingleInstance();
