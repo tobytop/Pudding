@@ -16,7 +16,7 @@ namespace Pudding.Web.Api
 
         public IMediator _mediator { protected get; set; }
 
-        protected long GetUserID(string key = Config.DEFAULT_CLAIM_USERID)
+        protected virtual long GetUserID(string key = Config.DEFAULT_CLAIM_USERID)
         {
             return Convert.ToInt64(HttpContext.User.Claims.First(o => o.Type == key).Value.First());
         }

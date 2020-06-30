@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,7 @@ namespace Pudding.Web.Auth
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DefaultRequirement requirement)
         {
             AuthorizationFilterContext authorizationFilterContext = context.Resource as AuthorizationFilterContext;
-            Microsoft.AspNetCore.Http.HttpContext httpContext = authorizationFilterContext.HttpContext;
+            HttpContext httpContext = authorizationFilterContext.HttpContext;
             IAuthenticationHandlerProvider handlers = httpContext.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>();
             foreach (AuthenticationScheme scheme in await _schemes.GetRequestHandlerSchemesAsync())
             {

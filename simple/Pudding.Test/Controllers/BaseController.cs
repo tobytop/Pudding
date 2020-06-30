@@ -10,5 +10,6 @@ namespace Pudding.Test.Controllers
     public abstract partial class BaseController : ControllerBase
     {
         protected string mydata { get; set; }
+
     }
 }

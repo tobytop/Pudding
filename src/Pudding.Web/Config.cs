@@ -1,6 +1,6 @@
 ﻿namespace Pudding.Web
 {
-    public class Config
+    internal class Config
     {
         public const  string DEFAULT_CLAIM_USERID = "userid";
     }
