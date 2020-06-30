@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Pudding.Core;
+using Pudding.Web.Swagger;
 using System;
 using System.IO;
 using System.Reflection;
@@ -31,50 +32,57 @@ namespace Pudding.Test
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddJsonAndVersion().AddSwaggerGen(c=> {
-                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-
-                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
-                foreach (var description in provider.ApiVersionDescriptions)
-                {
-                    c.SwaggerDoc(description.GroupName,
-                         new OpenApiInfo()
-                         {
-                             Title = $"体检微服务接口 v{description.ApiVersion}",
-                             Version = description.ApiVersion.ToString(),
-                             Description = "切换版本请点右上角版本切换",
-                         }
-                    );
-                }
-                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
-
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme."
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
-                });
-
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-                //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SystemManagement.Dto.xml"));
+            services.AddJsonAndVersion().AddSwagger(new SwaggerDoc {
+                Title = "微服务接口 v",
+                Description = "切换版本请点右上角版本切换",
+                AuthName = "验证token",
+                AuthDescription = "获取Token",
+                DocPath= Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml")
             });
+            //services.AddJsonAndVersion().AddSwaggerGen(c=> {
+            //    var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+            //    //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
+            //    foreach (var description in provider.ApiVersionDescriptions)
+            //    {
+            //        c.SwaggerDoc(description.GroupName,
+            //             new OpenApiInfo()
+            //             {
+            //                 Title = $"体检微服务接口 v{description.ApiVersion}",
+            //                 Version = description.ApiVersion.ToString(),
+            //                 Description = "切换版本请点右上角版本切换",
+            //             }
+            //        );
+            //    }
+            //    //c.SwaggerDoc("v1", new OpenApiInfo { Title = "System Management", Version = "v1" });
+
+            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            //    {
+            //        Name = "Authorization",
+            //        Type = SecuritySchemeType.ApiKey,
+            //        Scheme = "Bearer",
+            //        BearerFormat = "JWT",
+            //        In = ParameterLocation.Header,
+            //        Description = "JWT Authorization header using the Bearer scheme."
+            //    });
+            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            //    {
+            //        {
+            //            new OpenApiSecurityScheme
+            //            {
+            //                Reference = new OpenApiReference
+            //                {
+            //                    Type = ReferenceType.SecurityScheme,
+            //                    Id = "Bearer"
+            //                }
+            //            },
+            //            new string[] {}
+            //        }
+            //    });
+
+            //    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+            //    //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SystemManagement.Dto.xml"));
+            //});
             
             ContainerBuilder builder = new ContainerBuilder()
                 .BuildWeb()
@@ -98,19 +106,19 @@ namespace Pudding.Test
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
-            app.UseSwagger();
-            
-            app.UseSwaggerUI(c =>
-            {
-                //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
-                var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
-                foreach (var description in provider.ApiVersionDescriptions)
-                {
-                    c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-                }
-                //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
-                c.RoutePrefix = string.Empty;
-            });
+
+            app.UseApiSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
+            //    var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+            //    foreach (var description in provider.ApiVersionDescriptions)
+            //    {
+            //        c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+            //    }
+            //    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
+            //    c.RoutePrefix = string.Empty;
+            //});
 
             app.UseMvc();
         }
