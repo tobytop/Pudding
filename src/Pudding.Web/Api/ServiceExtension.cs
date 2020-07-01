@@ -13,15 +13,16 @@ namespace Pudding.Core
         /// 设置json的规则和版本
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="resolver">序列化版本 默认为小驼峰格式</param>
         /// <returns></returns>
-        public static IServiceCollection AddJsonAndVersion(this IServiceCollection services)
+        public static IServiceCollection AddJsonAndVersion(this IServiceCollection services, DefaultContractResolver resolver=null)
         {
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
             services.AddCors();
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                options.SerializerSettings.ContractResolver = resolver ?? new DefaultContractResolver
                 {
                     NamingStrategy = new CamelCaseNamingStrategy
                     {
