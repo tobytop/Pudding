@@ -35,7 +35,6 @@ namespace Pudding.Test
             services.AddJsonAndVersion().AddSwagger(new SwaggerDoc {
                 Title = "微服务接口 v",
                 Description = "切换版本请点右上角版本切换",
-                AuthName = "验证token",
                 AuthDescription = "获取Token",
                 DocPath= Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml")
             });

@@ -94,7 +94,7 @@ namespace Pudding.Web.Swagger
         /// <summary>
         /// 验证名称
         /// </summary>
-        public string AuthName { get; set; }
+        public string AuthName { get; set; } = "Authorization";
 
         /// <summary>
         /// 验证样式
