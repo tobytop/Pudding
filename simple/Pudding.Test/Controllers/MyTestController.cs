@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pudding.Web.Api;
 
-namespace Pudding.Test.Controllers
+namespace Pudding.Base.Controllers
 {
     [ApiController]
     public class MyTestController : BaseController
@@ -21,7 +22,6 @@ namespace Pudding.Test.Controllers
         [HttpGet]
         public string MyLog3()
         {
-            mydata = "";
             return _cache.Get("lala");
         }
     }

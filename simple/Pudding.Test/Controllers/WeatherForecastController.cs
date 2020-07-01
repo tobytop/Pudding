@@ -29,7 +29,6 @@ namespace Pudding.Test.Controllers
         [HttpGet]
         public string MyLog2()
         {
-            mydata = "";
             return _cache.Get("lala");
         }
 
@@ -43,7 +42,7 @@ namespace Pudding.Test.Controllers
         {
             Random rng = new Random();
             _cache.Put("lala", rng.Next(-20, 55).ToString());
-
+            
             //_cache.OnGet += new EventHandler<CacheActionEventArgs> (MyHandler);
             //_cache["lala"] = rng.Next (-20, 55).ToString ();
             //_cache.Expire ("lala", ExpirationMode.Absolute, TimeSpan.FromSeconds (1));

@@ -7,7 +7,7 @@ using System.Linq;
 namespace Pudding.Web.Api
 {
     [Route("api/v{version:apiVersion}/[controller]/[action]")]
-    public abstract partial class BaseController : ControllerBase
+    public abstract class BaseController : ControllerBase
     {
         /// <summary>
         /// 格式化器
