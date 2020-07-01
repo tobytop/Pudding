@@ -15,7 +15,7 @@ namespace Pudding.Core
         /// <param name="services"></param>
         /// <param name="resolver">序列化版本 默认为小驼峰格式</param>
         /// <returns></returns>
-        public static IServiceCollection AddJsonAndVersion(this IServiceCollection services, DefaultContractResolver resolver=null)
+        public static IServiceCollection AddJsonAndVersion(this IServiceCollection services, DefaultContractResolver resolver = null)
         {
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
             services.AddCors();
