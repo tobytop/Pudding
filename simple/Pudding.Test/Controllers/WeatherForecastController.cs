@@ -37,7 +37,7 @@ namespace Pudding.Test.Controllers
         /// </summary>
         /// <returns>整的</returns>
         [HttpGet]
-        [ApiVersion("2.0")]
+        [ApiVersion("1.5")]
         public string MyLog1()
         {
             Random rng = new Random();
