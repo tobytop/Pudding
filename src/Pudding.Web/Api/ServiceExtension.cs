@@ -19,10 +19,9 @@ namespace Pudding.Core
         {
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
             services.AddCors();
-            services.AddMvc().AddJsonOptions(options =>
-            {
+            services.AddControllers().AddNewtonsoftJson(options => {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.ContractResolver = resolver ?? new DefaultContractResolver
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver
                 {
                     NamingStrategy = new CamelCaseNamingStrategy
                     {

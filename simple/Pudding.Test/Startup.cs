@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Pudding.Core;
+using Pudding.Core.Policy;
+using Pudding.Test.Adapter;
 using Pudding.Web.Swagger;
 using System;
 using System.IO;
@@ -30,7 +32,7 @@ namespace Pudding.Test
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddJsonAndVersion().AddSwagger(new SwaggerDoc {
                 Title = "微服务接口 v",
@@ -83,14 +85,23 @@ namespace Pudding.Test
             //    //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SystemManagement.Dto.xml"));
             //});
             
-            ContainerBuilder builder = new ContainerBuilder()
+            /*ContainerBuilder builder = new ContainerBuilder()
                 .BuildWeb()
                 .BuildSerilog()
+                .BuildPolicy<TestAdapter,int>("examples/rbac_model.conf")
                 .BuildCacheManager();
             builder.Populate(services);
             IContainer container = builder.Build();
 
-            return new AutofacServiceProvider(container);
+            return new AutofacServiceProvider(container);*/
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.BuildWeb()
+                .BuildSerilog()
+                .BuildPolicy<TestAdapter, int>("examples/rbac_model.conf")
+                .BuildCacheManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,13 +111,19 @@ namespace Pudding.Test
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(builder => builder
+            /*app.UseCors(builder => builder
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .AllowCredentials());
+                .AllowCredentials());*/
 
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
             app.UseApiSwagger();
+
+            app.UseAuthorization();
+
             //app.UseSwaggerUI(c =>
             //{
             //    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
@@ -118,8 +135,6 @@ namespace Pudding.Test
             //    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
             //    c.RoutePrefix = string.Empty;
             //});
-
-            app.UseMvc();
         }
     }
 }

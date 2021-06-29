@@ -10,7 +10,7 @@ namespace Pudding.Core.Policy
         protected abstract IEnumerable<PolicyEntity<Tkey>> LoadPolicy();
 
         #region IAdapter
-        public abstract void AddPolicy(string sec, string ptype, IList<string> rule);
+        public void AddPolicy(string sec, string ptype, IList<string> rule) { }
         public void LoadPolicy(Model model)
         {
             LoadPolicyFromCasbinRules(model, LoadPolicy());
