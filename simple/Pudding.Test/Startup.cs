@@ -124,6 +124,12 @@ namespace Pudding.Test
 
             app.UseAuthorization();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
             //app.UseSwaggerUI(c =>
             //{
             //    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "System Management V1");
