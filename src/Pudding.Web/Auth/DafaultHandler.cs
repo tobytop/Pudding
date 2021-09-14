@@ -52,18 +52,15 @@ namespace Pudding.Web.Auth
                     else
                     {
                         httpContext.User = result.Principal;
-                        if (requirement.Validation != null)
+                        AuthResult validMsg = requirement.Validation?.Invoke(httpContext);
+                        if (validMsg != null && !validMsg.IsValid)
                         {
-                            AuthResult validMsg = requirement.Validation(httpContext);
-                            if (!validMsg.IsValid)
+                            authorizationFilterContext.Result = new JsonResult(new MessageResult
                             {
-                                authorizationFilterContext.Result = new JsonResult(new MessageResult
-                                {
-                                    Msg = validMsg.Msg,
-                                    Status = false
-                                })
-                                { StatusCode = 401 };
-                            }
+                                Msg = validMsg.Msg,
+                                Status = false
+                            })
+                            { StatusCode = 401 };
                         }
                     }
                 }
